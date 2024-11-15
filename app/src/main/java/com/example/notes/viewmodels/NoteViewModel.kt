@@ -1,5 +1,5 @@
-package com.example.notes.viewmodels
-
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notes.data.Note
@@ -16,32 +16,21 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         else repository.getNotesOrderedByTitle()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _selectedNote = MutableStateFlow<Note?>(null)
-    val selectedNote: StateFlow<Note?> = _selectedNote.asStateFlow()
+    private val _selectedNote = MutableLiveData<Note?>()
+    val selectedNote: LiveData<Note?> get() = _selectedNote
 
-    private val _errorState = MutableStateFlow<String?>(null)
-    val errorState: StateFlow<String?> = _errorState
-
-    fun loadNoteById(noteId: Int) {
-        viewModelScope.launch {
-            try {
-                val note = repository.getNoteById(noteId)
-                _selectedNote.value = note
-            } catch (e: Exception) {
-                _errorState.value = "Failed to load note: ${e.message}"
-            }
-        }
+    fun selectNote(note: Note) {
+        _selectedNote.value = note
     }
 
-    fun upsertNote(note: Note) {
+    fun upsertNote(title: String, description: String) {
         viewModelScope.launch {
+            val note = Note(
+                title = title,
+                disp = description,
+                dateAdded = System.currentTimeMillis()
+            )
             repository.upsert(note)
-        }
-    }
-
-    fun deleteNote() {
-        viewModelScope.launch {
-            _selectedNote.value?.let { repository.delete(it) }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.notes.fragments
 
+import NoteViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,15 +13,19 @@ import com.example.notes.R
 import com.example.notes.adapters.NoteAdapter
 import com.example.notes.data.NoteDatabase
 import com.example.notes.repository.NoteRepository
-import com.example.notes.viewmodels.NoteViewModel
 import com.example.notes.viewmodels.NoteViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.constraintlayout.motion.widget.MotionLayout
-import kotlinx.coroutines.flow.collect
+import androidx.fragment.app.activityViewModels
 import kotlinx.coroutines.launch
 
 class NoteListFragment : Fragment() {
-    private lateinit var viewModel: NoteViewModel
+    private val viewModel: NoteViewModel by activityViewModels {
+        val noteDao = NoteDatabase.getInstance(requireContext()).noteDao()
+        val repository = NoteRepository(noteDao)
+        NoteViewModelFactory(repository)
+    }
+
     private lateinit var noteAdapter: NoteAdapter
     private lateinit var motionLayout: MotionLayout
 
@@ -32,10 +37,6 @@ class NoteListFragment : Fragment() {
 
         motionLayout = view.findViewById(R.id.motion_layout)
         setupRecyclerView(view)
-
-        val noteDao = NoteDatabase.getInstance(requireContext()).noteDao()
-        val repository = NoteRepository(noteDao)
-        viewModel = NoteViewModelFactory(repository).create(NoteViewModel::class.java)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.notes.collect { notes ->
@@ -55,11 +56,8 @@ class NoteListFragment : Fragment() {
 
     private fun setupRecyclerView(view: View) {
         noteAdapter = NoteAdapter { note ->
-            val fragment = NoteDetailFragment.newInstance(note.id)
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit()
+            viewModel.selectNote(note) // Set the selected note in the ViewModel
+            navigateToNoteDetailFragment()
         }
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
@@ -85,5 +83,13 @@ class NoteListFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun navigateToNoteDetailFragment() {
+        val fragment = NoteDetailFragment()
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

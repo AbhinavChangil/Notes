@@ -1,5 +1,6 @@
 package com.example.notes.fragments
 
+import NoteViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,6 @@ import com.example.notes.databinding.FragmentAddNoteBinding
 import com.example.notes.data.Note
 import com.example.notes.data.NoteDatabase
 import com.example.notes.repository.NoteRepository
-import com.example.notes.viewmodels.NoteViewModel
 import com.example.notes.viewmodels.NoteViewModelFactory
 
 class AddNoteFragment : Fragment() {
@@ -55,7 +55,7 @@ class AddNoteFragment : Fragment() {
                 dateAdded = System.currentTimeMillis()
             )
 
-            viewModel.upsertNote(newNote)
+            viewModel.upsertNote(newNote.title, newNote.disp)
             Toast.makeText(requireContext(), "Note added successfully", Toast.LENGTH_SHORT).show()
             parentFragmentManager.popBackStack()
         }
