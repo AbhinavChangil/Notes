@@ -16,10 +16,20 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
     private val isSortedByDateAdded = MutableStateFlow(true)
     private val searchQuery = MutableStateFlow("")
 
-    val notes: StateFlow<List<Note>> = searchQuery.flatMapLatest { query ->
-        if (query.isEmpty()) repository.getNotesOrderedByDateAdded()
-        else repository.getNotesFilteredByQuery(query) // Add this method in your DAO
+    val notes: StateFlow<List<Note>> = combine(searchQuery, isSortedByDateAdded) { query, isSorted ->
+        Pair(query, isSorted)
+    }.flatMapLatest { (query, isSorted) ->
+        if (query.isEmpty()) {
+            if (isSorted) {
+                repository.getNotesOrderedByDateAdded()
+            }
+            else repository.getNotesOrderedByTitle()
+        } else {
+            if (isSorted) repository.getNotesFilteredByQueryAndSortedByDate(query)
+            else repository.getNotesFilteredByQueryAndSortedByTitle(query)
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
 
     fun filterNotes(query: String) {
         searchQuery.value = query
@@ -52,5 +62,13 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
     fun toggleSortOrder() {
         isSortedByDateAdded.value = !isSortedByDateAdded.value
+    }
+    fun textSortBy() : String{
+        if(isSortedByDateAdded.value){
+            return "Date"
+        }
+        else{
+            return "Title"
+        }
     }
 }

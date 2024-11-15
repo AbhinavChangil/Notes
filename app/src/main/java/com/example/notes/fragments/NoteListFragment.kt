@@ -2,11 +2,13 @@ package com.example.notes.fragments
 
 import NoteViewModel
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -42,6 +44,8 @@ class NoteListFragment : Fragment() {
     private lateinit var ivSearch2: ImageView
     private lateinit var ivSort1: ImageView
     private lateinit var tvAllNotes2: TextView
+    private lateinit var tvSortBy: TextView
+    private lateinit var text_sortby: TextView
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -56,6 +60,7 @@ class NoteListFragment : Fragment() {
         ivSearch2 = view.findViewById(R.id.ivSearch2)
         ivSort1 = view.findViewById(R.id.ivSort1)
         tvAllNotes2 = view.findViewById(R.id.tvAllNotes)
+        tvSortBy = view.findViewById(R.id.tvSortBy)
 
         setupRecyclerView(view)
         setupSearchView()
@@ -83,10 +88,12 @@ class NoteListFragment : Fragment() {
 
         ivSort1.setOnClickListener {
             viewModel.toggleSortOrder()
+            tvSortBy.text = viewModel.textSortBy()
         }
 
         return view
     }
+
 
     private fun setupRecyclerView(view: View) {
         noteAdapter = NoteAdapter(
@@ -162,11 +169,13 @@ class NoteListFragment : Fragment() {
             ivSearch1.visibility = View.GONE
             ivSearch2.visibility = View.GONE
             ivSort1.visibility = View.GONE
+            tvSortBy.visibility = View.GONE
         } else {
             searchView.visibility = View.GONE
             ivSearch1.visibility = View.VISIBLE
             ivSearch2.visibility = View.VISIBLE
             ivSort1.visibility = View.VISIBLE
+            tvSortBy.visibility = View.VISIBLE
         }
     }
 

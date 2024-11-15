@@ -17,4 +17,8 @@ class NoteRepository(private val noteDao: NoteDao) {
     suspend fun getNoteById(id: Int): Note? = noteDao.getNoteById(id)
 
     fun getNotesFilteredByQuery(query: String): Flow<List<Note>> = noteDao.getNotesFilteredByQuery(query)
+
+    fun getNotesFilteredByQueryAndSortedByDate(query: String): Flow<List<Note>> = noteDao.getNotesFilteredByQueryAndSortedByDate(query)
+
+    fun getNotesFilteredByQueryAndSortedByTitle(query: String): Flow<List<Note>> = noteDao.getNotesFilteredByQueryAndSortedByTitle(query)
 }
