@@ -104,6 +104,8 @@ class NoteListFragment : Fragment() {
             viewModel.toggleSortOrder()
             tvSortBy.text = viewModel.textSortBy()
         }
+        viewModel.updateNoteCount()
+
 
         return view
     }
@@ -211,11 +213,6 @@ class NoteListFragment : Fragment() {
 
         dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
             viewModel.updateNoteCount()
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.noteCount.collect { count ->
-                    tvNotesCount.text = "${count.toString()} notes"
-                }
-            }
             alertDialog.dismiss()
         }
 
@@ -223,11 +220,6 @@ class NoteListFragment : Fragment() {
             viewModel.deleteNote(note)
 
             viewModel.updateNoteCount()
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.noteCount.collect { count ->
-                    tvNotesCount.text = "${count.toString()} notes"
-                }
-            }
 
             alertDialog.dismiss()
         }
