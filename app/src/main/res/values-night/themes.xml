@@ -8,6 +8,15 @@
         <item name="android:windowLightStatusBar">true</item>
 
     </style>
+    <style name="Base.Theme.Notes.Dialog" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">@color/black</item>
+        <item name="android:tint">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+    </style>
+
 
     <style name="card_item" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
@@ -26,6 +35,10 @@
         <item name="android:textColor">#061D6B</item> <!-- Text color, if applicable -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="iconTint">#FFFFFF</item> <!-- White for dark theme -->"
+    </style>
+
+    <style name="deleteButton">
+        <item name="android:tint">#CAC5C5</item> <!-- Icon color -->
     </style>
 
 

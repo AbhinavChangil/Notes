@@ -2,9 +2,13 @@ package com.example.notes.fragments
 
 import NoteViewModel
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,6 +21,7 @@ import com.example.notes.viewmodels.NoteViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.activityViewModels
+import com.example.notes.data.Note
 import kotlinx.coroutines.launch
 
 class NoteListFragment : Fragment() {
@@ -50,15 +55,26 @@ class NoteListFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+        view.findViewById<ImageView>(R.id.ivSort1).setOnClickListener {
+            viewModel.toggleSortOrder();
+        }
+        view.findViewById<ImageView>(R.id.ivSort).setOnClickListener {
+            viewModel.toggleSortOrder();
+        }
 
         return view
     }
 
     private fun setupRecyclerView(view: View) {
-        noteAdapter = NoteAdapter { note ->
-            viewModel.selectNote(note) // Set the selected note in the ViewModel
-            navigateToNoteDetailFragment()
-        }
+        noteAdapter = NoteAdapter(
+            onNoteClick = { note ->
+                viewModel.selectNote(note)
+                navigateToNoteDetailFragment()
+            },
+            onDeleteClick = { note ->
+                deleteNoteConfirmation(note)
+            }
+        )
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = GridLayoutManager(context, 2)
@@ -91,5 +107,25 @@ class NoteListFragment : Fragment() {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun deleteNoteConfirmation(note: Note) {
+        // Show a confirmation dialog before deleting
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_note, null)
+
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+            viewModel.deleteNote(note)
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
     }
 }

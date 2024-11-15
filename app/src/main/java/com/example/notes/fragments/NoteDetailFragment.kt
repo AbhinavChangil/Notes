@@ -54,6 +54,7 @@ class NoteDetailFragment : Fragment() {
     private fun saveNote() {
         val updatedTitle = binding.etTitle.text.toString().trim()
         val updatedDescription = binding.etDescription.text.toString().trim()
+        val updatedDate = System.currentTimeMillis()
 
         if (updatedTitle.isEmpty() || updatedDescription.isEmpty()) {
             Toast.makeText(requireContext(), "Fields cannot be empty", Toast.LENGTH_SHORT).show()
