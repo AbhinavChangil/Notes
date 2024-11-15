@@ -14,11 +14,16 @@ import kotlinx.coroutines.launch
 class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
     private val isSortedByDateAdded = MutableStateFlow(true)
+    private val searchQuery = MutableStateFlow("")
 
-    val notes: StateFlow<List<Note>> = isSortedByDateAdded.flatMapLatest { isSorted ->
-        if (isSorted) repository.getNotesOrderedByDateAdded()
-        else repository.getNotesOrderedByTitle()
+    val notes: StateFlow<List<Note>> = searchQuery.flatMapLatest { query ->
+        if (query.isEmpty()) repository.getNotesOrderedByDateAdded()
+        else repository.getNotesFilteredByQuery(query) // Add this method in your DAO
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun filterNotes(query: String) {
+        searchQuery.value = query
+    }
 
     private val _selectedNote = MutableLiveData<Note?>()
     val selectedNote: LiveData<Note?> get() = _selectedNote

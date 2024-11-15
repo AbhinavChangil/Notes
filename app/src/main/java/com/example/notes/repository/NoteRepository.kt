@@ -15,4 +15,6 @@ class NoteRepository(private val noteDao: NoteDao) {
     suspend fun delete(note: Note) = noteDao.deleteNote(note)
 
     suspend fun getNoteById(id: Int): Note? = noteDao.getNoteById(id)
+
+    fun getNotesFilteredByQuery(query: String): Flow<List<Note>> = noteDao.getNotesFilteredByQuery(query)
 }

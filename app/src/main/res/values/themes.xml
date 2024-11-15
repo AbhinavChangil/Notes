@@ -34,6 +34,12 @@
     <style name="deleteButton">
         <item name="android:tint">#000000</item> <!-- Icon color -->
     </style>
+    <style name="searchView">
+        <item name="android:color">#ffffff</item> <!-- Icon color -->
+        <item name="android:tint">#000000</item> <!-- Icon color -->
+        <item name="queryBackground">@android:color/transparent</item> <!-- Removes underline -->
+        <item name="submitBackground">@android:color/transparent</item> <!-- Removes submit background -->
+    </style>
 
     <style name="button">
         <item name="android:background">@drawable/button_rounded_background</item>

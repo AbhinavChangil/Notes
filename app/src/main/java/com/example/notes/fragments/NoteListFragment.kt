@@ -1,6 +1,7 @@
 package com.example.notes.fragments
 
 import NoteViewModel
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,6 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.activityViewModels
 import com.example.notes.data.Note
+import com.google.android.material.search.SearchBar
 import kotlinx.coroutines.launch
 
 class NoteListFragment : Fragment() {
@@ -33,7 +37,13 @@ class NoteListFragment : Fragment() {
 
     private lateinit var noteAdapter: NoteAdapter
     private lateinit var motionLayout: MotionLayout
+    private lateinit var searchView: SearchView
+    private lateinit var ivSearch1: ImageView
+    private lateinit var ivSearch2: ImageView
+    private lateinit var ivSort1: ImageView
+    private lateinit var tvAllNotes2: TextView
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,7 +51,14 @@ class NoteListFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_note_list, container, false)
 
         motionLayout = view.findViewById(R.id.motion_layout)
+        searchView = view.findViewById(R.id.search_view)
+        ivSearch1 = view.findViewById(R.id.ivSearch1)
+        ivSearch2 = view.findViewById(R.id.ivSearch2)
+        ivSort1 = view.findViewById(R.id.ivSort1)
+        tvAllNotes2 = view.findViewById(R.id.tvAllNotes)
+
         setupRecyclerView(view)
+        setupSearchView()
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.notes.collect { notes ->
@@ -55,11 +72,17 @@ class NoteListFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-        view.findViewById<ImageView>(R.id.ivSort1).setOnClickListener {
-            viewModel.toggleSortOrder();
+
+        ivSearch1.setOnClickListener {
+            toggleSearchViewVisibility(true)
         }
-        view.findViewById<ImageView>(R.id.ivSort).setOnClickListener {
-            viewModel.toggleSortOrder();
+        ivSearch2.setOnClickListener {
+            toggleSearchViewVisibility(true)
+        }
+
+
+        ivSort1.setOnClickListener {
+            viewModel.toggleSortOrder()
         }
 
         return view
@@ -101,6 +124,52 @@ class NoteListFragment : Fragment() {
         })
     }
 
+    private fun setupSearchView() {
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (!query.isNullOrEmpty()) {
+                    filterNotes(query)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (!newText.isNullOrEmpty()) {
+                    filterNotes(newText)
+                } else {
+                    filterNotes("") // Reset filter if input is cleared
+                }
+                return true
+            }
+        })
+
+        searchView.setOnCloseListener {
+            toggleSearchViewVisibility(false) // Reset visibility
+            filterNotes("") // Reset filter
+            true
+        }
+    }
+
+
+    private fun filterNotes(query: String) {
+        // Use the query to filter notes from the ViewModel
+        viewModel.filterNotes(query)
+    }
+
+    private fun toggleSearchViewVisibility(show: Boolean) {
+        if (show) {
+            searchView.visibility = View.VISIBLE
+            ivSearch1.visibility = View.GONE
+            ivSearch2.visibility = View.GONE
+            ivSort1.visibility = View.GONE
+        } else {
+            searchView.visibility = View.GONE
+            ivSearch1.visibility = View.VISIBLE
+            ivSearch2.visibility = View.VISIBLE
+            ivSort1.visibility = View.VISIBLE
+        }
+    }
+
     private fun navigateToNoteDetailFragment() {
         val fragment = NoteDetailFragment()
         parentFragmentManager.beginTransaction()
@@ -110,9 +179,7 @@ class NoteListFragment : Fragment() {
     }
 
     private fun deleteNoteConfirmation(note: Note) {
-        // Show a confirmation dialog before deleting
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_note, null)
-
         val alertDialog = AlertDialog.Builder(requireContext())
             .setView(dialogView)
             .create()

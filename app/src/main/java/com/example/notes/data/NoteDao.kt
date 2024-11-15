@@ -20,4 +20,7 @@ interface NoteDao {
     // Add this function to get a note by its ID
     @Query("SELECT * FROM Note WHERE id = :noteId")
     suspend fun getNoteById(noteId: Int): Note?
+
+    @Query("SELECT * FROM Note WHERE title LIKE '%' || :query || '%' OR disp LIKE '%' || :query || '%' ORDER BY dateAdded DESC")
+    fun getNotesFilteredByQuery(query: String): Flow<List<Note>>
 }
