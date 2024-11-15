@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Transition setup between the start and end states -->
+    <Transition
+        app:constraintSetStart="@+id/start"
+        app:constraintSetEnd="@+id/end"
+        app:duration="200">
+        <OnSwipe
+            app:dragDirection="dragDown"
+            app:touchAnchorId="@id/motion_layout"
+            app:touchAnchorSide="top" />
+    </Transition>
+
+    <!-- Start ConstraintSet: Expanded state -->
+    <ConstraintSet android:id="@+id/start">
+        <Constraint android:id="@id/toolbar_layout1">
+            <KeyAttribute
+                android:alpha="0.0"/>
+            <PropertySet android:visibility="visible" />
+        </Constraint>
+        <Constraint android:id="@id/toolbar_layout2">
+            <KeyAttribute
+                android:alpha="1.0"/>
+            <PropertySet android:visibility="gone" />
+        </Constraint>
+    </ConstraintSet>
+
+    <!-- End ConstraintSet: Collapsed state -->
+    <ConstraintSet android:id="@+id/end">
+        <Constraint android:id="@id/toolbar_layout1">
+            <KeyAttribute
+                android:alpha="1.0"/>
+            <PropertySet android:visibility="gone" />
+        </Constraint>
+        <Constraint android:id="@id/toolbar_layout2">
+            <KeyAttribute
+                android:alpha="0.0"/>
+            <PropertySet android:visibility="visible" />
+        </Constraint>
+    </ConstraintSet>
+
+</MotionScene>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--    <item android:color="@color/iconColorLight" android:state_night_mode="false" /> &lt;!&ndash; Light theme &ndash;&gt;-->
+    <!--    <item android:color="@color/iconColorDark" android:state_night_mode="true" />  &lt;!&ndash; Dark theme &ndash;&gt;-->
+</selector>

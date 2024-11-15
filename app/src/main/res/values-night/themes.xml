@@ -1,0 +1,33 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Notes" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+         <item name="colorPrimary">@color/black</item>
+        <item name="android:tint">@color/black</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+    </style>
+
+    <style name="card_item" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="android:backgroundTint">#333333</item>
+        <item name="android:background">#333333</item>
+        <item name="android:textColor">#CCCCCC</item>
+        <item name="colorOutline">#FFFFFF</item> <!-- White outline for dark theme -->
+        <item name="hintTextColor">#CCCCCC</item> <!-- Light gray hint color -->
+
+    </style>
+
+    <style name="button">
+        <item name="android:background">@drawable/button_rounded_background</item>
+        <item name="android:backgroundTint">#FA491C</item> <!-- Background tint for the button -->
+        <item name="android:tint">#061D6B</item> <!-- Icon color -->
+        <item name="android:textColor">#061D6B</item> <!-- Text color, if applicable -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="iconTint">#FFFFFF</item> <!-- White for dark theme -->"
+    </style>
+
+
+
+</resources>
