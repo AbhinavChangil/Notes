@@ -22,28 +22,19 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
     private val _errorState = MutableStateFlow<String?>(null)
     val errorState: StateFlow<String?> = _errorState
 
-    fun loadNoteById(id: Int) {
+    fun loadNoteById(noteId: Int) {
         viewModelScope.launch {
             try {
-                _selectedNote.value = repository.getNoteById(id)
+                val note = repository.getNoteById(noteId)
+                _selectedNote.value = note
             } catch (e: Exception) {
                 _errorState.value = "Failed to load note: ${e.message}"
             }
         }
     }
 
-    fun clearSelectedNote() {
-        _selectedNote.value = null
-    }
-
-
-    fun upsertNote(title: String, description: String) {
+    fun upsertNote(note: Note) {
         viewModelScope.launch {
-            val note = Note(
-                title = title,
-                disp = description,
-                dateAdded = System.currentTimeMillis()
-            )
             repository.upsert(note)
         }
     }

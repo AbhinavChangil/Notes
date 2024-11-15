@@ -30,7 +30,9 @@ class NoteAdapter(private val onNoteClick: (Note) -> Unit) :
         fun bind(note: Note) {
             title.text = note.title
             description.text = note.disp
-            itemView.setOnClickListener { onNoteClick(note) }
+            itemView.setOnClickListener { onNoteClick(note)
+
+            }
         }
     }
 

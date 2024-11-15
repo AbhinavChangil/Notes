@@ -15,9 +15,9 @@ import com.example.notes.repository.NoteRepository
 import com.example.notes.viewmodels.NoteViewModel
 import com.example.notes.viewmodels.NoteViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.constraintlayout.motion.widget.MotionLayout
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import androidx.constraintlayout.motion.widget.MotionLayout
 
 class NoteListFragment : Fragment() {
     private lateinit var viewModel: NoteViewModel
@@ -27,20 +27,16 @@ class NoteListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_note_list, container, false)
 
-        // Initialize MotionLayout
         motionLayout = view.findViewById(R.id.motion_layout)
-
         setupRecyclerView(view)
 
-        // Initialize the ViewModel
         val noteDao = NoteDatabase.getInstance(requireContext()).noteDao()
         val repository = NoteRepository(noteDao)
         viewModel = NoteViewModelFactory(repository).create(NoteViewModel::class.java)
 
-        // Collecting the StateFlow data from viewModel.notes
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.notes.collect { notes ->
                 noteAdapter.submitList(notes)
@@ -59,17 +55,17 @@ class NoteListFragment : Fragment() {
 
     private fun setupRecyclerView(view: View) {
         noteAdapter = NoteAdapter { note ->
-            val fragment = NoteDetailFragment.newInstance(note.id.toString())
+            val fragment = NoteDetailFragment.newInstance(note.id)
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)
                 .commit()
         }
+
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
         recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.adapter = noteAdapter
 
-        // Add scroll listener to RecyclerView to track scroll progress
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -78,7 +74,6 @@ class NoteListFragment : Fragment() {
                 val scrollOffset = recyclerView.computeVerticalScrollOffset()
                 val progress = scrollOffset.toFloat() / totalScrollRange.toFloat()
 
-                // Trigger transition based on the halfway mark
                 if (progress >= 0.1f) {
                     if (motionLayout.currentState != R.id.end) {
                         motionLayout.transitionToEnd()
