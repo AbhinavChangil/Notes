@@ -50,4 +50,13 @@
         <item name="iconTint">#000000</item> <!-- Black for light theme -->
     </style>
 
+    <style name="google_background">
+        <item name="android:background">@drawable/rounded_button_google</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:tint">@color/black</item>
+        <item name="android:backgroundTint">#D2256AEF</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:drawableTint">@color/black</item>
+    </style>
+
 </resources>

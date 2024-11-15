@@ -21,4 +21,6 @@ class NoteRepository(private val noteDao: NoteDao) {
     fun getNotesFilteredByQueryAndSortedByDate(query: String): Flow<List<Note>> = noteDao.getNotesFilteredByQueryAndSortedByDate(query)
 
     fun getNotesFilteredByQueryAndSortedByTitle(query: String): Flow<List<Note>> = noteDao.getNotesFilteredByQueryAndSortedByTitle(query)
+
+    suspend fun getNoteCount() : Int = noteDao.getNoteCount()
 }

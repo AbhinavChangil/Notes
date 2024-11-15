@@ -77,4 +77,13 @@ dependencies {
 
 
     implementation(libs.gson)
+
+
+    // Kotlin Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Jetpack Lifecycle for observing StateFlow
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx.v261)
 }

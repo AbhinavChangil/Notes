@@ -42,6 +42,22 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         _selectedNote.value = note
     }
 
+    private val _noteCount = MutableStateFlow(0)
+    val noteCount: StateFlow<Int> = _noteCount.asStateFlow()
+
+    fun updateNoteCount() {
+        viewModelScope.launch {
+            try {
+                val count = repository.getNoteCount() // Safely fetch count
+                _noteCount.value = count
+            } catch (e: Exception) {
+                Log.e("NoteViewModel", "Error fetching note count: ${e.message}")
+            }
+        }
+    }
+
+
+
 
     fun upsertNote(title: String, description: String) {
         viewModelScope.launch {
@@ -53,6 +69,13 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
             repository.upsert(note)
         }
     }
+
+    fun updateNote(note: Note) {
+        viewModelScope.launch {
+            repository.upsert(note) // Use the existing `upsert` method to update the note
+        }
+    }
+
 
     fun deleteNote(note: Note) {
         viewModelScope.launch {

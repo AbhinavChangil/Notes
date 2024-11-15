@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -45,9 +46,9 @@ class NoteListFragment : Fragment() {
     private lateinit var ivSort1: ImageView
     private lateinit var tvAllNotes2: TextView
     private lateinit var tvSortBy: TextView
-    private lateinit var text_sortby: TextView
+    private lateinit var tvNotesCount: TextView
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,15 +62,28 @@ class NoteListFragment : Fragment() {
         ivSort1 = view.findViewById(R.id.ivSort1)
         tvAllNotes2 = view.findViewById(R.id.tvAllNotes)
         tvSortBy = view.findViewById(R.id.tvSortBy)
+        tvNotesCount = view.findViewById(R.id.tvNoteCount1)
+
+
 
         setupRecyclerView(view)
         setupSearchView()
+
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.notes.collect { notes ->
                 noteAdapter.submitList(notes)
             }
         }
+
+        viewModel.updateNoteCount()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.noteCount.collect { count ->
+                tvNotesCount.text = "${count.toString()} notes"
+            }
+        }
+
+
 
         view.findViewById<FloatingActionButton>(R.id.fab_add_note).setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -93,6 +107,7 @@ class NoteListFragment : Fragment() {
 
         return view
     }
+
 
 
     private fun setupRecyclerView(view: View) {
@@ -187,6 +202,7 @@ class NoteListFragment : Fragment() {
             .commit()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun deleteNoteConfirmation(note: Note) {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_delete_note, null)
         val alertDialog = AlertDialog.Builder(requireContext())
@@ -194,11 +210,25 @@ class NoteListFragment : Fragment() {
             .create()
 
         dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+            viewModel.updateNoteCount()
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.noteCount.collect { count ->
+                    tvNotesCount.text = "${count.toString()} notes"
+                }
+            }
             alertDialog.dismiss()
         }
 
         dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
             viewModel.deleteNote(note)
+
+            viewModel.updateNoteCount()
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.noteCount.collect { count ->
+                    tvNotesCount.text = "${count.toString()} notes"
+                }
+            }
+
             alertDialog.dismiss()
         }
 

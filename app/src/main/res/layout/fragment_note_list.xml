@@ -38,7 +38,7 @@
                 android:id="@+id/tvNoteCount1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="150 notes"
+                android:text=""
                 android:textColor="#888888"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"

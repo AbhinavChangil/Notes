@@ -1,5 +1,6 @@
 package com.example.notes.fragments
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.example.notes.R
@@ -23,7 +26,10 @@ class LoginFragment : Fragment() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
+    private lateinit var logoImg: ImageView
+    private lateinit var progressBar: ProgressBar
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,6 +52,11 @@ class LoginFragment : Fragment() {
             signInWithGoogle()
         }
 
+        logoImg = view.findViewById(R.id.logo)
+        logoImg.setImageResource(R.drawable.logo)
+
+        progressBar = view.findViewById(R.id.progressBar)
+
         return view
     }
 
@@ -56,12 +67,15 @@ class LoginFragment : Fragment() {
         try {
             val account = task.getResult(ApiException::class.java)
             firebaseAuthWithGoogle(account.idToken)
+            progressBar.visibility = View.GONE
         } catch (e: ApiException) {
+            progressBar.visibility = View.GONE
             Log.w("LoginFragment", "Google sign-in failed", e)
         }
     }
 
     private fun signInWithGoogle() {
+        progressBar.visibility = View.VISIBLE
         val signInIntent = googleSignInClient.signInIntent
         googleSignInLauncher.launch(signInIntent)
     }
@@ -71,11 +85,13 @@ class LoginFragment : Fragment() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
+
+                    progressBar.visibility = View.GONE
                     // Sign in success
-                    Log.d("LoginFragment", "signInWithCredential:success")
                     SharedPreferencesHelper.setLoggedIn(requireContext(), true)
                     navigateToNoteList()
                 } else {
+                    progressBar.visibility = View.GONE
                     // If sign-in fails, display a message to the user.
                     Log.w("LoginFragment", "signInWithCredential:failure", task.exception)
                 }
@@ -83,6 +99,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun navigateToNoteList() {
+        progressBar.visibility = View.GONE
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, NoteListFragment())
             .commit()
